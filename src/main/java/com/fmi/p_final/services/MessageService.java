@@ -46,20 +46,16 @@ public class MessageService {
         return AppResponse.success(message, "Message sent successfully.");
     }
 
-    public ResponseEntity<AppResponse<Message>> sendMessageToChannel(Long senderId, Long channelId, String content) {
+    public ResponseEntity<AppResponse<Message>> sendMessageToChannel(Message message) {
         // Check if sender exists
-        User sender = userRepository.findById(senderId)
+        User sender = userRepository.findById(message.getSender().getId())
                 .orElseThrow(() -> new RuntimeException("Sender not found"));
 
         // Check if the channel exists
-        Channel channel = channelRepository.findById(channelId)
+        Channel channel = channelRepository.findById(message.getChannel().getId())
                 .orElseThrow(() -> new RuntimeException("Channel not found"));
 
         // Create the message
-        Message message = new Message();
-        message.setSender(sender);
-        message.setChannel(channel);
-        message.setContent(content);
         message.setTimestamp(LocalDateTime.now());
 
         // Save the message

@@ -87,145 +87,158 @@
 </div>
 
 <script>
-        const API_URL = "http://localhost:8165";
-        let currentChatId = null;
-        let isChannel = false;
-        let currentChatName = "";
-        const currentUserId = 1;
+const API_URL = "http://localhost:8165";
+let currentChatId = null;
+let isChannel = false;
+let currentChatName = "";
+const currentUserId = 1;
 
-        // Fetch and display channels
-        async function loadChannels() {
-            try {
-                const response = await fetch(API_URL + "/channels");
-                const jsonResponse = await response.json();
+const USER_RECORD = {};
 
-                if (!jsonResponse.success) {
-                    console.error("Error fetching channels:", jsonResponse.message);
-                    return;
-                }
+// Fetch and display channels
+async function loadChannels() {
+  const response = await fetch(API_URL + "/channels");
+  const jsonResponse = await response.json();
 
-                const channels = jsonResponse.data;
-                const channelList = document.getElementById("channel-list");
-                channelList.innerHTML = "";
+  if (!jsonResponse.success) {
+    console.error("Error fetching channels:", jsonResponse);
+    return;
+  }
 
-                channels.forEach(channel => {
-                    const li = document.createElement("li");
-                    li.innerText = channel.name;
-                    li.onclick = () => loadMessages(channel.id, true, channel.name);
-                    channelList.appendChild(li);
-                });
-            } catch (error) {
-                console.error("Error loading channels:", error);
-            }
-        }
+  const channels = jsonResponse.data;
+  const channelList = document.getElementById("channel-list");
+  channelList.innerHTML = "";
 
-        // Fetch and display friends
-        async function loadFriends() {
-            try {
-                const response = await fetch(`${API_URL}/friends/user/${currentUserId}`);
-                const jsonResponse = await response.json();
-
-                if (!jsonResponse.success) {
-                    console.error("Error fetching friends:", jsonResponse.message);
-                    return;
-                }
-
-                const friends = jsonResponse.data;
-                const friendList = document.getElementById("friend-list");
-                friendList.innerHTML = "";
-
-                friends.forEach(friend => {
-                    const li = document.createElement("li");
-                    li.innerText = friend.friendUsername;
-                    li.onclick = () => loadMessages(friend.friendId, false, friend.friendUsername);
-                    friendList.appendChild(li);
-                });
-            } catch (error) {
-                console.error("Error loading friends:", error);
-            }
-        }
-
-        // Fetch and display messages
-        async function loadMessages(id, channel, name) {
-            currentChatId = id;
-            isChannel = channel;
-            currentChatName = name;
-            document.getElementById("chat-title").innerText = name;
-
-            try {
-                const response = await fetch(`${API_URL}/messages/${channel ? `channel/${id}` : `user/${currentUserId}/received`}`);
-                const jsonResponse = await response.json();
-
-                if (!jsonResponse.success) {
-                    console.error("Error fetching messages:", jsonResponse.message);
-                    return;
-                }
-
-                const messages = jsonResponse.data;
-                const messageBox = document.getElementById("messages");
-                messageBox.innerHTML = "";
-
-                messages.forEach(msg => {
-                    const div = document.createElement("div");
-                    div.innerHTML = `<strong>${msg.senderUsername}:</strong> ${msg.content}`;
-                    messageBox.appendChild(div);
-                });
-            } catch (error) {
-                console.error("Error loading messages:", error);
-            }
-        }
-
-async function sendMessage() {
-    const messageInput = document.getElementById("message-input");
-    const text = messageInput.value.trim();
-    if (!text || !currentChatId) return;
-
-    let endpoint = `${API_URL}/messages/send`;
-    let bodyData = new URLSearchParams();
-
-    bodyData.append("senderId", currentUserId);
-    bodyData.append("content", text);
-
-    if (isChannel) {
-        endpoint = `${API_URL}/messages/send/channel`;
-        bodyData.append("channelId", currentChatId);
-    } else {
-        bodyData.append("recipientId", currentChatId);
-    }
-
-    try {
-        const response = await fetch(endpoint, {
-            method: "POST",
-            headers: { "Content-Type": "application/x-www-form-urlencoded" },
-            body: bodyData
-        });
-
-        if (response.ok) {
-            messageInput.value = "";
-            loadMessages(currentChatId, isChannel, currentChatName);
-
-            // ✅ Instantly add the new message to the UI
-            const messageBox = document.getElementById("messages");
-            const newMessage = document.createElement("div");
-            newMessage.innerHTML = `<strong>You:</strong> ${text}`;
-            messageBox.appendChild(newMessage);
-
-            // ✅ Scroll to latest message
-            messageBox.scrollTop = messageBox.scrollHeight;
-        } else {
-            console.error("Failed to send message.");
-        }
-    } catch (error) {
-        console.error("Error sending message:", error);
-    }
+  channels.forEach((channel) => {
+    const li = document.createElement("li");
+    li.innerText = channel.name;
+    li.onclick = () => loadChannelMessages(channel.id, channel.name);
+    channelList.appendChild(li);
+  });
 }
 
-    // Load data when the page is loaded
-    window.onload = () => {
-        loadChannels();
-        loadFriends();
-    };
+// Fetch and display friends
+async function loadFriends() {
+  try {
+    const response = await fetch(`${API_URL}/friends/user/${currentUserId}`);
+    const jsonResponse = await response.json();
 
+    if (!jsonResponse.success) {
+      console.error("Error fetching friends:", jsonResponse.message);
+      return;
+    }
+
+    const friends = jsonResponse.data;
+    const friendList = document.getElementById("friend-list");
+    friendList.innerHTML = "";
+
+    friends.forEach((friend) => {
+      const li = document.createElement("li");
+      li.innerText = friend.friendUsername;
+      li.onclick = () => loadDMs(friend.friend.id, friend.friend.username);
+      friendList.appendChild(li);
+    });
+  } catch (error) {
+    console.error("Error loading friends:", error);
+  }
+}
+
+async function loadChannelMessages(channelId, channelName) {
+  document.getElementById("chat-title").innerText = channelName;
+
+  try {
+    const response = await fetch(`${API_URL}/messages/channel/${channelId}`);
+    const jsonResponse = await response.json();
+
+    if (!jsonResponse.success) {
+      console.error("Error fetching messages:", jsonResponse.message);
+      return;
+    }
+
+    const messages = jsonResponse.data;
+    const messageBox = document.getElementById("messages");
+    messageBox.innerHTML = "";
+
+    messages.forEach((msg) => {
+      const div = document.createElement("div");
+      div.classList.add("message");
+      div.innerHTML = `<strong>${msg.sender.username}:</strong> ${msg.content}`;
+      messageBox.appendChild(div);
+    });
+  } catch (error) {
+    console.error("Error loading messages:", error);
+  }
+}
+
+async function loadDMs(otherGuyId, otherGuyName) {
+  document.getElementById("chat-title").innerText = channelName;
+
+  console.log(`Getting messages for ${otherGuyName}`);
+
+  const response = await fetch(
+    `${API_URL}/messages/user/${currentUserId}/friend/${otherGuyId}`,
+  );
+  const jsonResponse = await response.json();
+
+  if (!jsonResponse.success) {
+    console.error("Error fetching messages:", jsonResponse.message);
+    return;
+  }
+
+  const messages = jsonResponse.data;
+  const messageBox = document.getElementById("messages");
+  messageBox.innerHTML = "";
+
+  messages.forEach((msg) => {
+    const div = document.createElement("div");
+    div.classList.add("message");
+    div.innerHTML = `<strong>${msg.sender.username}:</strong> ${msg.content}`;
+    messageBox.appendChild(div);
+  });
+}
+
+async function sendMessage() {
+  const messageInput = document.getElementById("message-input");
+  const text = messageInput.value.trim();
+  if (!text || !currentChatId) return;
+
+  let endpoint = `${API_URL}/messages/send`;
+  const bodyData = new FormData();
+
+  bodyData.append("senderId", currentUserId);
+  bodyData.append("content", text);
+
+  if (isChannel) {
+    endpoint = `${API_URL}/messages/send/channel`;
+    bodyData.append("channelId", currentChatId);
+  } else {
+    bodyData.append("recipientId", currentChatId);
+  }
+
+  const response = await fetch(endpoint, {
+    method: "POST",
+    headers: { "Content-Type": "application/x-www-form-urlencoded" },
+    body: bodyData,
+  });
+
+  if (response.ok) {
+    messageInput.value = "";
+    if (isChannel) {
+      loadChannelMessages(currentChatId, currentChatName);
+    } else {
+      // TODO
+      loadDMs();
+    }
+  } else {
+    console.error("Failed to send message.");
+  }
+}
+
+// Load data when the page is loaded
+window.onload = () => {
+  loadChannels();
+  loadFriends();
+};
 </script>
 
 </body>

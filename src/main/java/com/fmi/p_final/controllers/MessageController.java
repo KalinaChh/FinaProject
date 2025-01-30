@@ -2,8 +2,10 @@ package com.fmi.p_final.controllers;
 
 import com.fmi.p_final.entities.Message;
 import com.fmi.p_final.entities.MockedSecurity;
+import com.fmi.p_final.entities.User;
 import com.fmi.p_final.http.AppResponse;
 import com.fmi.p_final.services.MessageService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -42,11 +44,10 @@ public class MessageController {
 
     @PostMapping("/send/channel")
     public ResponseEntity<AppResponse<Message>> sendMessageToChannel(
-            @RequestParam Long senderId,
-            @RequestParam Long channelId,
-            @RequestParam String content) {
-        return messageService.sendMessageToChannel(senderId, channelId, content);
+            @Valid @RequestBody Message message) {
+        return messageService.sendMessageToChannel(message);
     }
+
 
     @DeleteMapping("/{messageId}")
     public ResponseEntity<AppResponse<Object>> deleteMessage(
