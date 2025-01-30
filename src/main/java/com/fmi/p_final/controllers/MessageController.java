@@ -1,6 +1,7 @@
 package com.fmi.p_final.controllers;
 
 import com.fmi.p_final.dto.MessageDTO;
+import com.fmi.p_final.dto.SendMessageToChannelDTO;
 import com.fmi.p_final.entities.Message;
 import com.fmi.p_final.entities.MockedSecurity;
 import com.fmi.p_final.entities.User;
@@ -45,7 +46,7 @@ public class MessageController {
 
     @PostMapping("/send/channel")
     public ResponseEntity<AppResponse<MessageDTO>> sendMessageToChannel(
-            @Valid @RequestBody Message message) {
+            @Valid @RequestBody SendMessageToChannelDTO message) {
         return messageService.sendMessageToChannel(message);
     }
 

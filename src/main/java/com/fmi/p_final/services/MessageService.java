@@ -2,6 +2,7 @@ package com.fmi.p_final.services;
 
 import com.fmi.p_final.controllers.MockedSecutiryController;
 import com.fmi.p_final.dto.MessageDTO;
+import com.fmi.p_final.dto.SendMessageToChannelDTO;
 import com.fmi.p_final.entities.Channel;
 import com.fmi.p_final.entities.Message;
 import com.fmi.p_final.entities.MockedSecurity;
@@ -47,24 +48,27 @@ public class MessageService {
         return AppResponse.success(new MessageDTO(sender.getId(),sender.getUsername(),MessageDTO.No_Channel, message.getContent()), "Message sent successfully.");
     }
 
-    public ResponseEntity<AppResponse<MessageDTO>> sendMessageToChannel(Message message) {
+    public ResponseEntity<AppResponse<MessageDTO>> sendMessageToChannel(SendMessageToChannelDTO message) {
+
         // Check if sender exists
-        User sender = userRepository.findById(message.getSender().getId())
+        User sender = userRepository.findById(message.sender.id)
                 .orElseThrow(() -> new RuntimeException("Sender not found"));
 
         // Check if the channel exists
-        Channel channel = channelRepository.findById(message.getChannel().getId())
+        Channel channel = channelRepository.findById(message.channelId)
                 .orElseThrow(() -> new RuntimeException("Channel not found"));
 
         // Create the message
-        message.setTimestamp(LocalDateTime.now());
+        var messageToSave = new Message();
+        messageToSave.setSender(sender);
+        messageToSave.setChannel(channel);
+        messageToSave.setContent(message.content);
 
         // Save the message
-        messageRepository.save(message);
-
+        messageRepository.save(messageToSave);
 
         // Return success response
-        return AppResponse.success(new MessageDTO(sender.getId(), sender.getUsername(), channel.getId(), message.getContent()), "Message sent successfully.");
+        return AppResponse.success(new MessageDTO(sender.getId(), sender.getUsername(), channel.getId(), message.content), "Message sent successfully.");
     }
 
 
