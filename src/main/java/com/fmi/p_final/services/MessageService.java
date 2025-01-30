@@ -44,7 +44,7 @@ public class MessageService {
                 .build();
 
         messageRepository.save(message);
-        return AppResponse.success(new MessageDTO(sender.getId(),MessageDTO.No_Channel, message.getContent()), "Message sent successfully.");
+        return AppResponse.success(new MessageDTO(sender.getId(),sender.getUsername(),MessageDTO.No_Channel, message.getContent()), "Message sent successfully.");
     }
 
     public ResponseEntity<AppResponse<MessageDTO>> sendMessageToChannel(Message message) {
@@ -64,7 +64,7 @@ public class MessageService {
 
 
         // Return success response
-        return AppResponse.success(new MessageDTO(sender.getId(), channel.getId(), message.getContent()), "Message sent successfully.");
+        return AppResponse.success(new MessageDTO(sender.getId(), sender.getUsername(), channel.getId(), message.getContent()), "Message sent successfully.");
     }
 
 
@@ -77,7 +77,7 @@ public class MessageService {
         }
 
         return AppResponse.success(messages.stream().map(
-                message -> new MessageDTO(userId, message.getChannel().getId(), message.getContent())).toList(),
+                message -> new MessageDTO(userId, user.getUsername(), message.getChannel().getId(), message.getContent())).toList(),
                 "Messages retrieved successfully.");
     }
 
@@ -90,7 +90,7 @@ public class MessageService {
         }
 
         return AppResponse.success(messages.stream().map(
-                message -> new MessageDTO(userId, message.getChannel().getId(), message.getContent())).toList(),
+                message -> new MessageDTO(userId, user.getUsername(), message.getChannel().getId(), message.getContent())).toList(),
                 "Messages retrieved successfully.");
     }
 
@@ -105,7 +105,7 @@ public class MessageService {
         }
 
         return AppResponse.success(messages.stream().map(
-                message -> new MessageDTO(message.getSender().getId(),channelId, message.getContent())).toList(),
+                message -> new MessageDTO(message.getSender().getId(),message.getSender().getUsername(),channelId, message.getContent())).toList(),
                 "Messages retrieved successfully.");
     }
 
