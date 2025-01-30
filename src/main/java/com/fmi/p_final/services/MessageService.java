@@ -1,6 +1,7 @@
 package com.fmi.p_final.services;
 
 import com.fmi.p_final.controllers.MockedSecutiryController;
+import com.fmi.p_final.dto.MessageDTO;
 import com.fmi.p_final.entities.Channel;
 import com.fmi.p_final.entities.Message;
 import com.fmi.p_final.entities.MockedSecurity;
@@ -32,7 +33,7 @@ public class MessageService {
     }
 
     @Transactional
-    public ResponseEntity<AppResponse<Message>> sendDirectMessage(Long senderId, Long recipientId, String content) {
+    public ResponseEntity<AppResponse<MessageDTO>> sendDirectMessage(Long senderId, Long recipientId, String content) {
         User sender = getUser(senderId);
         User recipient = getUser(recipientId);
 
@@ -43,10 +44,10 @@ public class MessageService {
                 .build();
 
         messageRepository.save(message);
-        return AppResponse.success(message, "Message sent successfully.");
+        return AppResponse.success(new MessageDTO(sender.getId(),MessageDTO.No_Channel, message.getContent()), "Message sent successfully.");
     }
 
-    public ResponseEntity<AppResponse<Message>> sendMessageToChannel(Message message) {
+    public ResponseEntity<AppResponse<MessageDTO>> sendMessageToChannel(Message message) {
         // Check if sender exists
         User sender = userRepository.findById(message.getSender().getId())
                 .orElseThrow(() -> new RuntimeException("Sender not found"));
@@ -61,12 +62,13 @@ public class MessageService {
         // Save the message
         messageRepository.save(message);
 
+
         // Return success response
-        return AppResponse.success(message, "Message sent successfully.");
+        return AppResponse.success(new MessageDTO(sender.getId(), channel.getId(), message.getContent()), "Message sent successfully.");
     }
 
 
-    public ResponseEntity<AppResponse<List<Message>>> getMessagesSentByUser(Long userId) {
+    public ResponseEntity<AppResponse<List<MessageDTO>>> getMessagesSentByUser(Long userId) {
         User user = getUser(userId);
         List<Message> messages = messageRepository.findBySender(user);
 
@@ -74,10 +76,12 @@ public class MessageService {
             return AppResponse.error(HttpStatus.NOT_FOUND, "No messages sent by this user.");
         }
 
-        return AppResponse.success(messages, "Messages retrieved successfully.");
+        return AppResponse.success(messages.stream().map(
+                message -> new MessageDTO(userId, message.getChannel().getId(), message.getContent())).toList(),
+                "Messages retrieved successfully.");
     }
 
-    public ResponseEntity<AppResponse<List<Message>>> getMessagesReceivedByUser(Long userId) {
+    public ResponseEntity<AppResponse<List<MessageDTO>>> getMessagesReceivedByUser(Long userId) {
         User user = getUser(userId);
         List<Message> messages = messageRepository.findByRecipient(user);
 
@@ -85,10 +89,12 @@ public class MessageService {
             return AppResponse.error(HttpStatus.NOT_FOUND, "No messages received by this user.");
         }
 
-        return AppResponse.success(messages, "Messages retrieved successfully.");
+        return AppResponse.success(messages.stream().map(
+                message -> new MessageDTO(userId, message.getChannel().getId(), message.getContent())).toList(),
+                "Messages retrieved successfully.");
     }
 
-    public ResponseEntity<AppResponse<List<Message>>> getMessagesInChannel(Long channelId) {
+    public ResponseEntity<AppResponse<List<MessageDTO>>> getMessagesInChannel(Long channelId) {
         Channel channel = channelRepository.findById(channelId)
                 .orElseThrow(() -> new RuntimeException("Channel not found."));
 
@@ -98,7 +104,9 @@ public class MessageService {
             return AppResponse.error(HttpStatus.NOT_FOUND, "No messages found in this channel.");
         }
 
-        return AppResponse.success(messages, "Messages retrieved successfully.");
+        return AppResponse.success(messages.stream().map(
+                message -> new MessageDTO(message.getSender().getId(),channelId, message.getContent())).toList(),
+                "Messages retrieved successfully.");
     }
 
     public ResponseEntity<AppResponse<Message>> getMessageById(Long messageId) {
