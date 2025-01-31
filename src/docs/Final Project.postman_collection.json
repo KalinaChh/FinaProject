@@ -16,7 +16,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n  \"username\": \"joaquim_User\",\r\n  \"password\": \"password\",\r\n  \"email\": \"joaquimNewMail@gmail.com\"\r\n}",
+							"raw": "{\r\n  \"username\": \"new_User\",\r\n  \"password\": \"passwordStrongPass\",\r\n  \"email\": \"newmail@gmail.com\"\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -113,7 +113,7 @@
 						"method": "DELETE",
 						"header": [],
 						"url": {
-							"raw": "http://localhost:8165/users/24",
+							"raw": "http://localhost:8165/users/28",
 							"protocol": "http",
 							"host": [
 								"localhost"
@@ -121,7 +121,7 @@
 							"port": "8165",
 							"path": [
 								"users",
-								"24"
+								"28"
 							]
 						}
 					},
@@ -133,7 +133,7 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "http://localhost:8165/users/search?username=chad",
+							"raw": "http://localhost:8165/users/search?username=kalina",
 							"protocol": "http",
 							"host": [
 								"localhost"
@@ -146,7 +146,7 @@
 							"query": [
 								{
 									"key": "username",
-									"value": "chad"
+									"value": "kalina"
 								}
 							]
 						}
@@ -165,7 +165,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n  \"name\": \"best-memes-in-town\",\r\n  \"owner\": {\r\n    \"id\": 27\r\n  }\r\n}\r\n\r\n",
+							"raw": "{\r\n  \"name\": \"tooCool\",\r\n  \"owner\": {\r\n    \"id\": 21\r\n  }\r\n}\r\n\r\n",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -212,7 +212,7 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "http://localhost:8165/channels/14",
+							"raw": "http://localhost:8165/channels/17",
 							"protocol": "http",
 							"host": [
 								"localhost"
@@ -220,7 +220,7 @@
 							"port": "8165",
 							"path": [
 								"channels",
-								"14"
+								"17"
 							]
 						}
 					},
@@ -230,9 +230,20 @@
 					"name": "Delete channel",
 					"request": {
 						"method": "DELETE",
-						"header": [],
+						"header": [
+							{
+								"key": "Mocked-Token",
+								"value": "bypass",
+								"type": "text"
+							},
+							{
+								"key": "Mocked-RequesterId",
+								"value": "4",
+								"type": "text"
+							}
+						],
 						"url": {
-							"raw": "http://localhost:8165/channels/14?mockedToken=bypass&mockedRequesterId=999",
+							"raw": "http://localhost:8165/channels/16",
 							"protocol": "http",
 							"host": [
 								"localhost"
@@ -240,17 +251,7 @@
 							"port": "8165",
 							"path": [
 								"channels",
-								"14"
-							],
-							"query": [
-								{
-									"key": "mockedToken",
-									"value": "bypass"
-								},
-								{
-									"key": "mockedRequesterId",
-									"value": "999"
-								}
+								"16"
 							]
 						}
 					},
@@ -260,7 +261,18 @@
 					"name": "Update channel",
 					"request": {
 						"method": "PUT",
-						"header": [],
+						"header": [
+							{
+								"key": "Mocked-Token",
+								"value": "bypass",
+								"type": "text"
+							},
+							{
+								"key": "Mocked-RequesterId",
+								"value": "13",
+								"type": "text"
+							}
+						],
 						"body": {
 							"mode": "raw",
 							"raw": "{\r\n    \"name\": \"Updated General Channel\"\r\n}\r\n",
@@ -271,7 +283,7 @@
 							}
 						},
 						"url": {
-							"raw": "http://localhost:8165/channels/14?newName=NewChannelName",
+							"raw": "http://localhost:8165/channels/17?newName=toCoolNew",
 							"protocol": "http",
 							"host": [
 								"localhost"
@@ -279,12 +291,12 @@
 							"port": "8165",
 							"path": [
 								"channels",
-								"14"
+								"17"
 							],
 							"query": [
 								{
 									"key": "newName",
-									"value": "NewChannelName"
+									"value": "toCoolNew"
 								}
 							]
 						}
@@ -294,8 +306,40 @@
 				{
 					"name": "Add user in channel",
 					"request": {
-						"method": "GET",
-						"header": []
+						"method": "POST",
+						"header": [
+							{
+								"key": "Mocked-Token",
+								"value": "bypass",
+								"type": "text"
+							},
+							{
+								"key": "Mocked-RequesterId",
+								"value": "21",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"user\": { \"id\": 20 },\r\n  \"channel\": { \"id\": 17 }\r\n}\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8165/channel-members/add",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8165",
+							"path": [
+								"channel-members",
+								"add"
+							]
+						}
 					},
 					"response": []
 				},
@@ -305,7 +349,7 @@
 						"method": "DELETE",
 						"header": [],
 						"url": {
-							"raw": "http://localhost:8165/channel-members/remove?mockedToken=bypass&mockedRequesterId=999&userId=456&channelId=14",
+							"raw": "http://localhost:8165/channel-members/remove?mockedToken=bypass&mockedRequesterId=21&userId=20&channelId=17",
 							"protocol": "http",
 							"host": [
 								"localhost"
@@ -322,15 +366,15 @@
 								},
 								{
 									"key": "mockedRequesterId",
-									"value": "999"
+									"value": "21"
 								},
 								{
 									"key": "userId",
-									"value": "456"
+									"value": "20"
 								},
 								{
 									"key": "channelId",
-									"value": "14"
+									"value": "17"
 								}
 							]
 						}
@@ -343,7 +387,7 @@
 						"method": "PUT",
 						"header": [],
 						"url": {
-							"raw": "http://localhost:8165/channel-members/update-role?mockedToken=bypass&mockedRequesterId=999&userId=456&channelId=14&newRole=ADMIN",
+							"raw": "http://localhost:8165/channel-members/update-role?mockedToken=bypass&mockedRequesterId=21&userId=20&channelId=17&newRole=ADMIN",
 							"protocol": "http",
 							"host": [
 								"localhost"
@@ -360,47 +404,20 @@
 								},
 								{
 									"key": "mockedRequesterId",
-									"value": "999"
+									"value": "21"
 								},
 								{
 									"key": "userId",
-									"value": "456"
+									"value": "20"
 								},
 								{
 									"key": "channelId",
-									"value": "14"
+									"value": "17"
 								},
 								{
 									"key": "newRole",
 									"value": "ADMIN"
 								}
-							]
-						}
-					},
-					"response": []
-				}
-			]
-		},
-		{
-			"name": "Member Queries",
-			"item": [
-				{
-					"name": "Add member into channel",
-					"request": {
-						"method": "POST",
-						"header": [],
-						"url": {
-							"raw": "http://localhost:8165/channel-members/add/21/15",
-							"protocol": "http",
-							"host": [
-								"localhost"
-							],
-							"port": "8165",
-							"path": [
-								"channel-members",
-								"add",
-								"21",
-								"15"
 							]
 						}
 					},
@@ -412,7 +429,7 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "http://localhost:8165/channel-members/channel/15",
+							"raw": "http://localhost:8165/channel-members/channel/17",
 							"protocol": "http",
 							"host": [
 								"localhost"
@@ -421,58 +438,7 @@
 							"path": [
 								"channel-members",
 								"channel",
-								"15"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Update Member Role",
-					"request": {
-						"method": "PUT",
-						"header": [],
-						"body": {
-							"mode": "raw",
-							"raw": "{\r\n  \"channel\": { \"id\": 14 },\r\n  \"user\": { \"id\": 23 },\r\n  \"role\": \"ADMIN\"\r\n}\r\n",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "http://localhost:8165/channel-members/update-role",
-							"protocol": "http",
-							"host": [
-								"localhost"
-							],
-							"port": "8165",
-							"path": [
-								"channel-members",
-								"update-role"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "New Request",
-					"request": {
-						"method": "DELETE",
-						"header": [],
-						"url": {
-							"raw": "http://localhost:8165/channels/2/members/2",
-							"protocol": "http",
-							"host": [
-								"localhost"
-							],
-							"port": "8165",
-							"path": [
-								"channels",
-								"2",
-								"members",
-								"2"
+								"17"
 							]
 						}
 					},
@@ -486,8 +452,30 @@
 				{
 					"name": "SendMessageToChannel",
 					"request": {
-						"method": "GET",
-						"header": []
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"sender\":{\r\n            \"password\": \"securePassword123\",\r\n            \"id\": 20\r\n    },\r\n    \"channelId\":15,\r\n    \"content\":\"coolMessage\"\r\n}\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8165/messages/send/channel",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8165",
+							"path": [
+								"messages",
+								"send",
+								"channel"
+							]
+						}
 					},
 					"response": []
 				},
@@ -495,7 +483,20 @@
 					"name": "GetMessagesFromChannel",
 					"request": {
 						"method": "GET",
-						"header": []
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8165/messages/channel/15",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8165",
+							"path": [
+								"messages",
+								"channel",
+								"15"
+							]
+						}
 					},
 					"response": []
 				}

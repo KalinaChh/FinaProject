@@ -51,8 +51,8 @@ public class ChannelController {
     @DeleteMapping("/{channelId}")
     public ResponseEntity<AppResponse<Object>> deleteChannel(
             @PathVariable Long channelId,
-            @RequestHeader("Mocked Token") String token,
-            @RequestHeader("Mocked Requester Id") Long requesterId
+            @RequestHeader("Mocked-Token") String token,
+            @RequestHeader("Mocked-RequesterId") Long requesterId
     ) {
         MockedSecurity ms = new MockedSecurity();
         ms.token = token;
